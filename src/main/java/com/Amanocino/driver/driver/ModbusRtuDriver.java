@@ -3,12 +3,15 @@ package com.Amanocino.driver.driver;
 import com.Amanocino.driver.common.BaseConvertByte;
 import com.Amanocino.driver.common.BeanConvertorUtil;
 import com.Amanocino.driver.common.ByteObjectConvert;
+import com.Amanocino.driver.driver.common.IScadaDriverTag;
 import com.Amanocino.driver.driver.message.ModbusTcpEntity;
 import com.Amanocino.driver.driver.modbus.CRCVerify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+@IScadaDriverTag(id="modebusRtu")
 public class ModbusRtuDriver implements IScadaDriver {
     public static final int OP_READ_COIL_STATUS = 1;
     public static final int OP_READ_INPUT_STATUS = 2;
@@ -112,8 +115,27 @@ public class ModbusRtuDriver implements IScadaDriver {
     }
 
     @Override
-    public List<ScadaTag> decode(byte[] message) {
-        return null;
+    public List<ModbusTcpEntity> decode(byte[] message) {
+        List<ModbusTcpEntity> scadaTags = new ArrayList<>();
+        for (int i=0;i<message.length;){
+            ModbusTcpEntity tag = new ModbusTcpEntity();
+            tag.setDeviceId(Arrays.copyOf(message, i+1)[0]);
+            tag.setFunctionCode(Arrays.copyOfRange(message, i+1, i+2)[0]);
+            tag.setMessagelength(Arrays.copyOfRange(message, i+2, i+3)[0]);
+
+            tag.setDateList(Arrays.copyOfRange(message, i+3, i+3+tag.getMessagelength()));
+            byte[] crcCheck = BaseConvertByte.byte2Bytes((byte)CRCVerify.getCRC(Arrays.copyOfRange(message, i, i+3+tag.getMessagelength())));
+            for (int var1=0;var1<crcCheck.length;var1++){
+                if (crcCheck[var1]!=message[var1]){
+
+                }
+            }
+            i+=5+tag.getMessagelength();
+            scadaTags.add(tag);
+        }
+
+
+        return scadaTags;
     }
 
 }

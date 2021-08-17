@@ -1,11 +1,21 @@
 package com.Amanocino.driver.common;
 
+import javax.xml.bind.DatatypeConverter;
+
 /**
  * @author : zhicheng chen
  * @date : 2021/7/21
  * @time : 16:02
  */
 public class BaseConvertByte {
+    public static String byteArrToHex(byte[] btArr) {
+        return DatatypeConverter.printHexBinary(btArr);
+    }
+
+    public static byte[] hexToByteArr(String hexStr) {
+        return DatatypeConverter.parseHexBinary(hexStr);
+    }
+
     public static byte[] byte2Bytes(byte n) {
         byte[] bytes = new byte[1];
         bytes[0] = n;

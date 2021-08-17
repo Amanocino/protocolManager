@@ -3,12 +3,14 @@ package com.Amanocino.driver.driver;
 import com.Amanocino.driver.common.BaseConvertByte;
 import com.Amanocino.driver.common.BeanConvertorUtil;
 import com.Amanocino.driver.common.ByteObjectConvert;
+import com.Amanocino.driver.driver.common.IScadaDriverTag;
 import com.Amanocino.driver.driver.message.ModbusTcpEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@IScadaDriverTag(id="modebusTcp")
 public class ModbusTcpDriver implements IScadaDriver {
 
     private short PROTOCOL = 0;
@@ -64,19 +66,18 @@ public class ModbusTcpDriver implements IScadaDriver {
     }
 
     @Override
-    public List<ScadaTag> decode(byte[] message) {
-        List<ScadaTag> scadaTags = new ArrayList<>();
+    public List<ModbusTcpEntity> decode(byte[] message) {
+        List<ModbusTcpEntity> scadaTags = new ArrayList<>();
         for (int i=0;i<message.length;){
             ModbusTcpEntity tag = new ModbusTcpEntity();
-            tag.setMessageId(BaseConvertByte.bytes2Short(Arrays.copyOf(message, 2)));
-            tag.setProtocolId(BaseConvertByte.bytes2Short(Arrays.copyOfRange(message, 2, 2)));
-            tag.setMessagelength(BaseConvertByte.bytes2Short(Arrays.copyOfRange(message, 4, 2)));
-            tag.setDeviceId(message[6]);
-            tag.setFunctionCode(message[7]);
-            tag.setDateList(Arrays.copyOfRange(message, 8, tag.getMessagelength()-2));
+            tag.setMessageId(BaseConvertByte.bytes2Short(Arrays.copyOf(message, i+2)));
+            tag.setProtocolId(BaseConvertByte.bytes2Short(Arrays.copyOfRange(message, i+2, i+4)));
+            tag.setMessagelength(BaseConvertByte.bytes2Short(Arrays.copyOfRange(message, i+4, i+6)));
+            tag.setDeviceId(message[i+6]);
+            tag.setFunctionCode(message[i+7]);
+            tag.setDateList(Arrays.copyOfRange(message, i+8, i+8+tag.getMessagelength()-2));
             i+=6+tag.getMessagelength();
-            ScadaTag scadaTag = tag.reConvertDataFromTag(tag);
-            scadaTags.add(scadaTag);
+            scadaTags.add(tag);
         }
 
 
