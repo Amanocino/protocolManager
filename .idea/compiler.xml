@@ -7,9 +7,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="protocolManager" />
         <module name="protocolManager-master" />
+        <module name="driverCore" />
+        <module name="modebusRtu" />
+        <module name="modbusTcp" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="modbusRtu" target="8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
